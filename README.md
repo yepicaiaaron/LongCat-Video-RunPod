@@ -37,6 +37,12 @@ For more detail, please refer to the comprehensive [***LongCat-Video Technical R
   <video src="https://github.com/user-attachments/assets/00fa63f0-9c4e-461a-a79e-c662ad596d7d" width="2264" height="384"> </video>
 </div>
 
+## 🔥 Latest News!!
+- Dec 16, 2025: 🚀 We are excited to announce the release of LongCat-Video-Avatar, a unified model that delivers expressive and highly dynamic audio-driven character animation, supporting native tasks including *Audio-Text-to-Video*, *Audio-Text-Image-to-Video*, and *Video Continuation* with seamless compatibility for both *single-stream* and *multi-stream* audio inputs. The release includes our [***Technical Report***](https://github.com/meituan-longcat/LongCat-Video), [***inference code***](https://github.com/meituan-longcat/LongCat-Video), 🤗 [***model weights***](https://huggingface.co/meituan-longcat/LongCat-Video-Avatar), and [***project page***](https://meigen-ai.github.io/LongCat-Video-Avatar/).
+- Oct 25, 2025: 🚀 We've released LongCat-Video, a foundational video generation model.  Tech report and models are available at [***LongCat-Video Technical Report***](https://arxiv.org/abs/2510.22200) and 🤗 [***Huggingface***](https://huggingface.co/meituan-longcat/LongCat-Video) !
+
+
+
 ## Quick Start
 
 ### Installation
@@ -66,20 +72,29 @@ pip install flash_attn==2.7.4.post1
 
 # install other requirements
 pip install -r requirements.txt
+
+# install longcat-video-avatar requirements
+conda install -c conda-forge librosa
+conda install -c conda-forge ffmpeg
+pip install -r requirements_avatar.txt
+
 ```
 
 FlashAttention-2 is enabled in the model config by default; you can also change the model config ("./weights/LongCat-Video/dit/config.json") to use FlashAttention-3 or xformers once installed.
 
 ### Model Download
 
-| Models | Download Link |
-| --- | --- |
-| LongCat-Video | 🤗 [Huggingface](https://huggingface.co/meituan-longcat/LongCat-Video) |
+| Models | Description | Download Link |
+| --- | --- | --- |
+| LongCat-Video | foundational video generation | 🤗 [Huggingface](https://huggingface.co/meituan-longcat/LongCat-Video) |
+| LongCat-Video-Avatar-Single | single-character audio-driven video generation  | 🤗 [Huggingface](https://huggingface.co/meituan-longcat/LongCat-Video-Avatar) |
+| LongCat-Video-Avatar-Multi | multi-character audio-driven video generation | 🤗 [Huggingface](https://huggingface.co/meituan-longcat/LongCat-Video-Avatar) |
 
 Download models using huggingface-cli:
 ```shell
 pip install "huggingface_hub[cli]"
 huggingface-cli download meituan-longcat/LongCat-Video --local-dir ./weights/LongCat-Video
+huggingface-cli download meituan-longcat/LongCat-Video-Avatar --local-dir ./weights/LongCat-Video-Avatar
 ```
 
 ### Run Text-to-Video
@@ -130,6 +145,38 @@ torchrun run_demo_interactive_video.py --checkpoint_dir=./weights/LongCat-Video 
 
 # Multi-GPU inference
 torchrun --nproc_per_node=2 run_demo_interactive_video.py --context_parallel_size=2 --checkpoint_dir=./weights/LongCat-Video --enable_compile
+```
+
+### Run LongCat-Video-Avatar
+💡 User tips
+> - Lip synchronization accuracy:​​ Audio CFG works optimally between 3–5. Increase the audio CFG value for better synchronization.
+> - Prompt Enhancement: Include clear verbal-action cues (e.g., talking, speaking) in the prompt to achieve more natural lip movements.
+> - Mitigate repeated actions: Setting the reference image index（--ref_img_index, default to 10） between 0 and 24 ensures better consistency, while selecting other ranges (e.g., -10 or 30) helps reduce repeated actions. Additionally, increasing the mask frame range (--mask_frame_range, default to 3) can further help mitigate repeated actions, but excessively large values may introduce artifacts.
+> - Super resolution: Our model is compatible with both 480P and 720P, which can be controlled via --resolution.
+> - Dual-Audio Modes: Merge mode (set audio_type to para) requires two audio clips of equal length, and the resulting audio is obtained by summing the two clips; Concatenation mode (set audio_type to add) does not require equal-length inputs, and the resulting audio is formed by sequentially concatenating the two clips with silence padding for any gaps, where by default person1 speaks first and person2 speaks afterward.
+
+- Single-Audio-to-Video Generation
+```shell
+# Audio-Text-to-Video
+torchrun --nproc_per_node=2 run_demo_avatar_single_audio_to_video.py --context_parallel_size=2 --checkpoint_dir=./weights/LongCat-Video-Avatar --stage_1=at2v --input_json=assets/avatar/single_example_1.json
+
+# Audio-Image-to-Video
+torchrun --nproc_per_node=2 run_demo_avatar_single_audio_to_video.py --context_parallel_size=2 --checkpoint_dir=./weights/LongCat-Video-Avatar  --stage_1=ai2v --input_json=assets/avatar/single_example_1.json
+
+# Audio-Text-to-Video and Video-Continuation
+torchrun --nproc_per_node=2 run_demo_avatar_single_audio_to_video.py --context_parallel_size=2 --checkpoint_dir=./weights/LongCat-Video-Avatar --stage_1=at2v --input_json=assets/avatar/single_example_1.json --num_segments=5 --ref_img_index=10 --mask_frame_range=3
+
+# Audio-Image-to-Video and Video-Continuation
+torchrun --nproc_per_node=2 run_demo_avatar_single_audio_to_video.py --context_parallel_size=2 --checkpoint_dir=./weights/LongCat-Video-Avatar --stage_1=ai2v --input_json=assets/avatar/single_example_1.json --num_segments=5 --ref_img_index=10 --mask_frame_range=3
+```
+
+- Multi-Audio-to-Video Generation
+```shell
+# Audio-Image-to-Video
+torchrun --nproc_per_node=2 run_demo_avatar_multi_audio_to_video.py --context_parallel_size=2 --checkpoint_dir=./weights/LongCat-Video-Avatar --input_json=assets/avatar/multi_example_1.json
+
+# Audio-Image-to-Video and Video-Continuation
+torchrun --nproc_per_node=2 run_demo_avatar_multi_audio_to_video.py --context_parallel_size=2 --checkpoint_dir=./weights/LongCat-Video-Avatar --input_json=assets/avatar/multi_example_1.json --num_segments=5 --ref_img_index=10 --mask_frame_range=3
 ```
 
 ### Run Streamlit
@@ -208,6 +255,15 @@ We kindly encourage citation of our work if you find it useful.
       archivePrefix={arXiv},
       primaryClass={cs.CV},
       url={https://arxiv.org/abs/2510.22200}, 
+}
+@misc{meituanlongcatteam2025longcatvideoavatartechnicalreport,
+      title={LongCat-Video-Avatar Technical Report}, 
+      author={Meituan LongCat Team},
+      year={2025},
+      eprint={},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={}, 
 }
 ```
 

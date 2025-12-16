@@ -121,6 +121,24 @@ def split_tensor_in_cp_2d(input, dim_hw, split_hw):
     return split_tensor
 
 
+class GatherFunction(torch.autograd.Function):
+
+    @staticmethod
+    def forward(ctx, input, process_group, seq_dim, frames):
+        ctx.cp_group = process_group
+        ctx.seq_dim = seq_dim
+        ctx.frames = frames
+        ctx.cp_size = get_cp_size()
+        input = rearrange(input, "B (T S) C -> B T S C", T=frames)
+        with torch.no_grad():
+            input = input.contiguous()
+            output_tensors = [torch.zeros_like(input) for _ in range(ctx.cp_size)]
+            dist.all_gather(output_tensors, input, group=ctx.cp_group)
+            output_tensor = torch.cat(output_tensors, dim=seq_dim)
+        output_tensor = rearrange(output_tensor, "B T S C -> B (T S) C", T=frames)
+        return output_tensor
+
+
 class GatherFunction2D(torch.autograd.Function):
 
     @staticmethod
@@ -196,6 +214,12 @@ class SplitFunction2D(torch.autograd.Function):
 
         return grad_input, None, None, None
 
+
+def gather_cp(input, frames):
+    cp_process_group = get_cp_group()
+    output_tensor = GatherFunction.apply(input, cp_process_group, 2, frames)
+
+    return output_tensor
 
 def gather_cp_2d(input, shape, split_hw):
     cp_process_group = get_cp_group()
