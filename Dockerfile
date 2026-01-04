@@ -43,7 +43,7 @@ RUN pip install --no-cache-dir flash_attn==2.7.4.post1 --no-build-isolation
 WORKDIR /workspace
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt .
+COPY requirements_serverless.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install RunPod SDK
