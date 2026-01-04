@@ -46,8 +46,6 @@ WORKDIR /workspace
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install longcat_video package
-RUN pip install --no-cache-dir -e ./longcat_video
 
 # Install RunPod SDK
 RUN pip install --no-cache-dir runpod
