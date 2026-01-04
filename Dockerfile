@@ -43,18 +43,17 @@ RUN pip install --no-cache-dir flash_attn==2.7.4.post1 --no-build-isolation
 WORKDIR /workspace
 
 # Copy requirements and install Python dependencies
-COPY requirements_serverless.txt requirements.txt
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install longcat_video package
+RUN pip install --no-cache-dir -e ./longcat_video
 
 # Install RunPod SDK
 RUN pip install --no-cache-dir runpod
 
 # Copy application code
-COPY . .
-
-# Download model weights (optional - can also be done at runtime)
-# Uncomment if you want to bake weights into the image
-# ARG HF_TOKEN
+COPY . .# ARG HF_TOKEN
 # RUN pip install --no-cache-dir "huggingface_hub[cli]" && \
 #     huggingface-cli login --token $HF_TOKEN && \
 #     huggingface-cli download meituan-longcat/LongCat-Video --local-dir ./weights/LongCat-Video
