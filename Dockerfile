@@ -1,4 +1,4 @@
-# LongCat-Video RunPod Serverless Dockerfile
+# LongCat-Video RunPod Serverless Dockerfile v1.0.1
 # Base image with CUDA 12.1 support
 FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
 
