@@ -34,6 +34,17 @@ def load_models():
     
     checkpoint_dir = os.environ.get('MODEL_PATH', './weights/LongCat-Video')
     context_parallel_size = int(os.environ.get('CONTEXT_PARALLEL_SIZE', '1'))
+
+        # Download model weights if not present
+    if not os.path.exists(checkpoint_dir) or not os.listdir(checkpoint_dir):
+        print(f"Downloading model weights to {checkpoint_dir}...")
+        from huggingface_hub import snapshot_download
+        snapshot_download(
+            repo_id="meituan-longcat/LongCat-Video",
+            local_dir=checkpoint_dir,
+            local_dir_use_symlinks=False
+        )
+        print("Model download complete!")
     
     # Setup distributed environment
     rank = int(os.environ.get('RANK', '0'))
