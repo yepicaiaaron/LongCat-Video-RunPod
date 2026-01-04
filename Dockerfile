@@ -51,7 +51,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir runpod
 
 # Copy application code
-COPY . .# ARG HF_TOKEN
+COPY . .
 # RUN pip install --no-cache-dir "huggingface_hub[cli]" && \
 #     huggingface-cli login --token $HF_TOKEN && \
 #     huggingface-cli download meituan-longcat/LongCat-Video --local-dir ./weights/LongCat-Video
