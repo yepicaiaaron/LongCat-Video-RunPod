@@ -1,0 +1,27 @@
+{
+  "title": "LongCat Video RunPod",
+  "description": "Text-to-video generation using LongCat-Video model on RunPod Serverless. Supports fast (16 steps) and high quality (50 steps) generation modes.",
+  "type": "serverless",
+  "category": "video",
+  "iconUrl": "https://raw.githubusercontent.com/yepicaiaaron/LongCat-Video-RunPod/main/assets/longcat-video_logo.svg",
+  "config": {
+    "runtime": "GPU",
+    "containerDiskInGb": 50,
+    "presets": [
+      {
+        "name": "Fast Generation",
+        "env": {
+          "MODEL_PATH": "/workspace/weights/LongCat-Video",
+          "CONTEXT_PARALLEL_SIZE": "1"
+        }
+      },
+      {
+        "name": "Multi-GPU",
+        "env": {
+          "MODEL_PATH": "/workspace/weights/LongCat-Video",
+          "CONTEXT_PARALLEL_SIZE": "2"
+        }
+      }
+    ]
+  }
+}
