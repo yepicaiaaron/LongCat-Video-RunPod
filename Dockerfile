@@ -1,6 +1,6 @@
 # LongCat-Video RunPod Serverless Dockerfile
-# Base image with CUDA 12.4 support
-FROM nvidia/cuda:12.4.0-cudnn-devel-ubuntu22.04
+# Base image with CUDA 12.1 support
+FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
