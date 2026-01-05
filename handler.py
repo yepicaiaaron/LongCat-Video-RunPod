@@ -32,7 +32,7 @@ def load_models():
     """Load models once on worker startup."""
     global PIPELINE, GENERATOR, LOCAL_RANK
     
-        checkpoint_dir = os.environ.get('MODEL_PATH', '/workspace/models/LongCat-Video')
+    checkpoint_dir = os.environ.get('MODEL_PATH', '/workspace/models/LongCat-Video')
     context_parallel_size = int(os.environ.get('CONTEXT_PARALLEL_SIZE', '1'))
 
         
