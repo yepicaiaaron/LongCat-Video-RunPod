@@ -45,6 +45,7 @@ WORKDIR /workspace
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --force-reinstall transformers==4.41.0
 
 
 # Install RunPod SDK
